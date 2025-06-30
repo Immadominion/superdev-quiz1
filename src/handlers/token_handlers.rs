@@ -12,8 +12,11 @@ pub async fn create_token_quiz(
     let mint_authority = match request.mintAuthority.parse::<Pubkey>() {
         Ok(pk) => pk,
         Err(_) => {
-            let error_msg = "Invalid mint authority address".to_string();
-            return Ok(SuperdevApiResponse::<String>::error_response_with_status(error_msg));
+            return Ok(warp::reply::json(&SuperdevApiResponse::<
+                CreateTokenResponseSuperdev,
+            >::error_response(
+                "Invalid mint authority address".to_string(),
+            )));
         }
     };
 
@@ -21,8 +24,11 @@ pub async fn create_token_quiz(
     let mint_pubkey = match request.mint.parse::<Pubkey>() {
         Ok(pk) => pk,
         Err(_) => {
-            let error_msg = "Invalid mint address".to_string();
-            return Ok(SuperdevApiResponse::<String>::error_response_with_status(error_msg));
+            return Ok(warp::reply::json(&SuperdevApiResponse::<
+                CreateTokenResponseSuperdev,
+            >::error_response(
+                "Invalid mint address".to_string()
+            )));
         }
     };
 
@@ -59,10 +65,7 @@ pub async fn create_token_quiz(
     };
 
     let response = SuperdevApiResponse::success_response(response_data);
-    Ok(warp::reply::with_status(
-        warp::reply::json(&response),
-        warp::http::StatusCode::OK,
-    ))
+    Ok(warp::reply::json(&response))
 }
 
 // Mint token endpoint - more beginner style code
@@ -72,24 +75,33 @@ pub async fn mint_token_superdev(
     let mint = match request.mint.parse::<Pubkey>() {
         Ok(pk) => pk,
         Err(_) => {
-            let error_msg = "Invalid mint address".to_string();
-            return Ok(SuperdevApiResponse::<String>::error_response_with_status(error_msg));
+            return Ok(warp::reply::json(&SuperdevApiResponse::<
+                MintTokenResponseQuiz,
+            >::error_response(
+                "Invalid mint address".to_string()
+            )));
         }
     };
 
     let authority = match request.authority.parse::<Pubkey>() {
         Ok(pk) => pk,
         Err(_) => {
-            let error_msg = "Invalid authority address".to_string();
-            return Ok(SuperdevApiResponse::<String>::error_response_with_status(error_msg));
+            return Ok(warp::reply::json(&SuperdevApiResponse::<
+                MintTokenResponseQuiz,
+            >::error_response(
+                "Invalid authority address".to_string(),
+            )));
         }
     };
 
     let destination = match request.destination.parse::<Pubkey>() {
         Ok(pk) => pk,
         Err(_) => {
-            let error_msg = "Invalid destination address".to_string();
-            return Ok(SuperdevApiResponse::<String>::error_response_with_status(error_msg));
+            return Ok(warp::reply::json(&SuperdevApiResponse::<
+                MintTokenResponseQuiz,
+            >::error_response(
+                "Invalid destination address".to_string(),
+            )));
         }
     };
 
@@ -126,8 +138,5 @@ pub async fn mint_token_superdev(
     };
 
     let response = SuperdevApiResponse::success_response(response_data);
-    Ok(warp::reply::with_status(
-        warp::reply::json(&response),
-        warp::http::StatusCode::OK,
-    ))
+    Ok(warp::reply::json(&response))
 }

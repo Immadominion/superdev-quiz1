@@ -17,9 +17,3 @@ pub async fn generate_keypair_superdev() -> Result<impl warp::Reply, warp::Rejec
     let response = SuperdevApiResponse::success_response(response_data);
     Ok(warp::reply::json(&response))
 }
-
-// Example error handling integration
-pub async fn example_error_handler() -> Result<impl warp::Reply, warp::Rejection> {
-    let error_msg = "Example error occurred".to_string();
-    Ok(SuperdevApiResponse::<String>::error_response_with_status(error_msg))
-}
