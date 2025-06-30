@@ -3,11 +3,13 @@ use serde::Serialize;
 #[derive(Serialize)]
 pub struct SuperdevApiResponse<T> {
     pub success: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub data: Option<T>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub error: Option<String>,
 }
 
-impl<T> SuperdevApiResponse<T> {
+impl<T: Serialize> SuperdevApiResponse<T> {
     pub fn success_response(data: T) -> Self {
         Self {
             success: true,
@@ -22,6 +24,20 @@ impl<T> SuperdevApiResponse<T> {
             data: None,
             error: Some(error_msg),
         }
+    }
+
+    pub fn error_response_with_status(
+        error_msg: String,
+    ) -> warp::reply::WithStatus<warp::reply::Json> {
+        let response = Self {
+            success: false,
+            data: None,
+            error: Some(error_msg),
+        };
+        warp::reply::with_status(
+            warp::reply::json(&response),
+            warp::http::StatusCode::BAD_REQUEST,
+        )
     }
 }
 
