@@ -92,7 +92,8 @@ pub struct SendSolResponseQuiz {
 #[derive(Serialize)]
 pub struct TokenAccountInfoSuperdev {
     pub pubkey: String,
-    pub isSigner: bool,
+    #[serde(rename = "isSigner")]
+    pub is_signer: bool,
 }
 
 #[derive(Serialize)]

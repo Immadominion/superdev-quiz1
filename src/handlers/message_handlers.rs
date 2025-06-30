@@ -12,32 +12,38 @@ pub async fn sign_message_quiz(
 ) -> Result<impl warp::Reply, warp::Rejection> {
     // Basic validation
     if request.message.is_empty() || request.secret.is_empty() {
-        return Ok(warp::reply::json(&SuperdevApiResponse::<
-            SignMessageResponseSuperdev,
-        >::error_response(
+        let response = SuperdevApiResponse::<SignMessageResponseSuperdev>::error_response(
             "Missing required fields".to_string()
-        )));
+        );
+        return Ok(warp::reply::with_status(
+            warp::reply::json(&response),
+            warp::http::StatusCode::BAD_REQUEST,
+        ));
     }
 
     // Decode private key - no proper error handling
     let private_key_bytes = match request.secret.from_base58() {
         Ok(bytes) => bytes,
         Err(_) => {
-            return Ok(warp::reply::json(&SuperdevApiResponse::<
-                SignMessageResponseSuperdev,
-            >::error_response(
+            let response = SuperdevApiResponse::<SignMessageResponseSuperdev>::error_response(
                 "Invalid private key format".to_string(),
-            )));
+            );
+            return Ok(warp::reply::with_status(
+                warp::reply::json(&response),
+                warp::http::StatusCode::BAD_REQUEST,
+            ));
         }
     };
 
     // Check length - hardcoded value
     if private_key_bytes.len() != 32 {
-        return Ok(warp::reply::json(&SuperdevApiResponse::<
-            SignMessageResponseSuperdev,
-        >::error_response(
+        let response = SuperdevApiResponse::<SignMessageResponseSuperdev>::error_response(
             "Invalid private key length".to_string(),
-        )));
+        );
+        return Ok(warp::reply::with_status(
+            warp::reply::json(&response),
+            warp::http::StatusCode::BAD_REQUEST,
+        ));
     }
 
     // Create Ed25519 keypair - inefficient copying
@@ -62,7 +68,10 @@ pub async fn sign_message_quiz(
     };
 
     let response = SuperdevApiResponse::success_response(response_data);
-    Ok(warp::reply::json(&response))
+    Ok(warp::reply::with_status(
+        warp::reply::json(&response),
+        warp::http::StatusCode::OK,
+    ))
 }
 
 // Verify message endpoint - more beginner style

@@ -125,7 +125,7 @@ pub async fn send_token_superdev(
     for account in &transfer_ix.accounts {
         let account_info = TokenAccountInfoSuperdev {
             pubkey: account.pubkey.to_string(),
-            isSigner: account.is_signer,
+            is_signer: account.is_signer,
         };
         accounts_vec.push(account_info);
     }
